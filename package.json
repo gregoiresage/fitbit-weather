@@ -1,0 +1,13 @@
+{
+  "fitbit": {
+    "appUUID": "2fead543-4011-4c49-895d-2f22f247288f",
+    "appType": "app",
+    "appDisplayName": "Weather-Demo",
+    "iconFile": "resources/icon.png",
+    "wipeColor": "#2196f3",
+    "requestedPermissions": [
+      "access_location",
+      "access_internet"
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+<svg viewport-fill="black">
+  <text id="GW_NAME" x="10" y="30"/>
+  <text id="GW_DESCRIPTION" x="10" y="80"/>
+  <text id="GW_TEMPK" x="10" y="130"/>
+  <text id="GW_SUNRISE" x="10" y="180"/>
+  <text id="GW_SUNSET" x="10" y="230"/>
+</svg>
