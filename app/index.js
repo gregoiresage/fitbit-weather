@@ -34,5 +34,7 @@ messaging.peerSocket.onopen = function() {
   weather.fetch();
 }
 
+// There is a bug with the current version of fitbit OS (1.1 beta2)
+// so the following line are needed if you don't have already attached a function the onmessage event
 messaging.peerSocket.onmessage = function(evt) {
 }
