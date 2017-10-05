@@ -1,8 +1,8 @@
-import * as messaging from "messaging";
+import { peerSocket } from "messaging";
 import { geolocation } from "geolocation";
 import * as utils from "./utils.js";
 
-export var Conditions = {
+export const Conditions = {
   ClearSky        : 0,
   FewClouds       : 1,
   ScatteredClouds : 2,
@@ -29,7 +29,7 @@ export default class Weather {
     this.onerror = undefined;
     this.onsuccess = undefined;
     
-    messaging.peerSocket.addEventListener("message", (evt) => {
+    peerSocket.addEventListener("message", (evt) => {
       if(utils.isRunningOnDevice()) {
         if (evt.data !== undefined && evt.data[WEATHER_MESSAGE_KEY] !== undefined) {
           // We are receiving the answer from the companion
@@ -77,14 +77,14 @@ export default class Weather {
     }
     
     if(utils.isRunningOnDevice()){
-      if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+      if (peerSocket.readyState === peerSocket.OPEN) {
         // Send a command to the companion
         let message = {};
         message[WEATHER_MESSAGE_KEY] = {};
         message[WEATHER_MESSAGE_KEY].apiKey    = this._apiKey;
         message[WEATHER_MESSAGE_KEY].provider  = this._provider;
         message[WEATHER_MESSAGE_KEY].feelsLike = this._feelsLike;
-        messaging.peerSocket.send(message);
+        peerSocket.send(message);
       }
       else {
         if(this.onerror) this.onerror("No connection with the companion");
@@ -118,19 +118,19 @@ function prv_fetchRemote(provider, apiKey, feelsLike) {
     (position) => {
       prv_fetch(provider, apiKey, feelsLike, position.coords.latitude, position.coords.longitude,
           (data) => {
-            if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+            if (peerSocket.readyState === peerSocket.OPEN) {
               let answer = {};
               answer[WEATHER_MESSAGE_KEY] = data;
-              messaging.peerSocket.send( answer );
+              peerSocket.send( answer );
             } else {
               console.log("Error: Connection is not open with the device");
             }
           },
           (error) => { 
-            if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+            if (peerSocket.readyState === peerSocket.OPEN) {
               let answer = {};
               answer[WEATHER_MESSAGE_KEY] = { error : error };  
-              messaging.peerSocket.send( answer );
+              peerSocket.send( answer );
             }
             else {
               console.log("Error : " + JSON.stringify(error) + " " + error); 
@@ -139,10 +139,10 @@ function prv_fetchRemote(provider, apiKey, feelsLike) {
       );
     }, 
     (error) => {
-      if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+      if (peerSocket.readyState === peerSocket.OPEN) {
         let answer = {};
         answer[WEATHER_MESSAGE_KEY] = { error : error };  
-        messaging.peerSocket.send( answer );
+        peerSocket.send( answer );
       }
       else {
         console.log("Location Error : " + error.message); 
