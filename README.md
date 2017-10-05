@@ -80,3 +80,7 @@ let Conditions = {
   Unknown         : 1000,
 };
 ```
+
+## Contribution
+
+I'm not a javascript expert so every comment/code reactoring/best practice is appreciated. Don't hesitate to make PR and tell me what's wrong.
