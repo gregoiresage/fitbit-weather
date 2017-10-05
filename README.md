@@ -5,7 +5,7 @@ You can choose your favourite weather provider between [Yahoo](https://query.yah
 
 ## Usage
 
-Copy the files [weather.js](./common/weather.js) and [utils.js](./common/weather.js) in your *commons* folder
+Copy the files [weather.js](./common/weather.js) and [utils.js](./common/utils.js) in your *commons* folder
 
 ### Companion
 
