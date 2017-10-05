@@ -48,6 +48,7 @@ weather.fetch();
 * **setMaximumAge(int)** : set the maximum age in milliseconds of a possible cached weather data that is acceptable to return. Default is `0`
 * **onsuccess(data)** : it is the event handler when the weather data arrives
 * **onserror(error)** : it is the event handler when the library fails
+* **fetch()** : retrieve the weather
 
 ## Example of result
 ```json
