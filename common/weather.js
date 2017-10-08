@@ -200,8 +200,8 @@ function prv_queryOWMWeather(apiKey, latitude, longitude, success, error) {
         description : data.weather[0].description,
         isDay : (data.dt > data.sys.sunrise && data.dt < data.sys.sunset),
         conditionCode : condition,
-        sunrise : data.sys.sunrise,
-        sunset : data.sys.sunset,
+        sunrise : data.sys.sunrise * 1000,
+        sunset : data.sys.sunset * 1000,
         timestamp : new Date().getTime()
       };
       // Send the weather data to the device
@@ -261,8 +261,8 @@ function prv_queryWUWeather(apiKey, feelsLike, latitude, longitude, success, err
         description : data.current_observation.weather,
         isDay : data.current_observation.icon_url.indexOf("nt_") == -1,
         conditionCode :condition,
-        sunrise : '0',
-        sunset : '0',
+        sunrise : 0,
+        sunset : 0,
         timestamp : new Date().getTime()
       };
       // Send the weather data to the device
@@ -319,8 +319,8 @@ function prv_queryDarkskyWeather(apiKey, feelsLike, latitude, longitude, success
         description : data.currently.summary,
         isDay : data.currently.icon.indexOf("-day") > 0,
         conditionCode :condition,
-        sunrise : data.daily.data[0].sunriseTime,
-        sunset : data.daily.data[0].sunsetTime,
+        sunrise : data.daily.data[0].sunriseTime * 1000,
+        sunset : data.daily.data[0].sunsetTime * 1000,
         timestamp : new Date().getTime()
       };
       // Send the weather data to the device
@@ -397,9 +397,9 @@ function prv_queryYahooWeather(latitude, longitude, success, error) {
         description : data.query.results.channel.item.condition.text,
         isDay : current_time >  sunrise_time && current_time < sunset_time,
         conditionCode : condition,
-        sunrise : data.query.results.channel.astronomy.sunrise,
-        sunset : data.query.results.channel.astronomy.sunset,
-        timestamp : new Date().getTime()
+        sunrise : sunrise_time.getTime(),
+        sunset : sunset_time.getTime(),
+        timestamp : current_time.getTime()
       };
       // Send the weather data to the device
       if(success) success(weather);
