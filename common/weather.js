@@ -1,6 +1,5 @@
 import { peerSocket } from "messaging";
 import { geolocation } from "geolocation";
-import * as utils from "./utils.js";
 
 export const Conditions = {
   ClearSky        : 0,
@@ -30,7 +29,7 @@ export default class Weather {
     this.onsuccess = undefined;
     
     peerSocket.addEventListener("message", (evt) => {
-      if(utils.isRunningOnDevice()) {
+      if(isRunningOnDevice()) {
         if (evt.data !== undefined && evt.data[WEATHER_MESSAGE_KEY] !== undefined) {
           // We are receiving the answer from the companion
           if(evt.data[WEATHER_MESSAGE_KEY].error !== undefined){
@@ -76,7 +75,7 @@ export default class Weather {
       return;
     }
     
-    if(utils.isRunningOnDevice()){
+    if(isRunningOnDevice()){
       if (peerSocket.readyState === peerSocket.OPEN) {
         // Send a command to the companion
         let message = {};
@@ -425,4 +424,17 @@ function prv_timeParse(str) {
   date.setMinutes(parseInt(time[1]));
 
   return date;
+}
+
+// This is just a hack to know if the javascript is running on the device or on the phone
+// I hope an API to do that will added in Fitbit OS because this solution is not satisfying
+
+import * as filetransfer from "file-transfer";
+
+function isRunningOnDevice() {
+  return filetransfer.inbox !== undefined;
+}
+
+function isRunningOnPhone() {
+  return !isRunningOnDevice();
 }

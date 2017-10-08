@@ -5,7 +5,7 @@ You can choose your favourite weather provider between [Yahoo](https://query.yah
 
 ## Usage
 
-Copy the files [weather.js](./common/weather.js) and [utils.js](./common/utils.js) in your *commons* folder
+Copy the files [weather.js](./common/weather.js) in your *commons* folder
 
 ### Companion
 
@@ -52,17 +52,17 @@ weather.fetch();
 
 ## Example of result
 ```json
-{
-  "temperatureC":17,
-  "temperatureF":62.6,
-  "location":"Castelnau-D'Estretefonds",
-  "description":"Mostly Clear",
-  "isDay":false,
-  "conditionCode":0,
-  "sunrise":"7:57 am",
-  "sunset":"7:27 pm",
-  "timestamp":1507236297786
-}
+  {
+    "temperatureC":15,
+    "temperatureF":59,
+    "location":"Castelnau-D'Estretefonds",
+    "description":"Mostly Clear",
+    "isDay":false,
+    "conditionCode":0,
+    "sunrise":1507442496594,
+    "sunset":1507483356594,
+    "timestamp":1507496916594
+  }
 ```
 
 ## Condition codes
