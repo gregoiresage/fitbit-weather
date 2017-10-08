@@ -212,7 +212,7 @@ function prv_queryOWMWeather(apiKey, latitude, longitude, success, error) {
 };
 
 function prv_queryWUWeather(apiKey, feelsLike, latitude, longitude, success, error) {
-  var url = 'http://api.wunderground.com/api/' + apiKey + '/Conditions/q/' + latitude + ',' + longitude + '.json';
+  var url = 'http://api.wunderground.com/api/' + apiKey + '/conditions/q/' + latitude + ',' + longitude + '.json';
 
   fetch(url)
   .then((response) => {return response.json()})
