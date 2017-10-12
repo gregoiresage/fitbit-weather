@@ -5,7 +5,7 @@ You can choose your favourite weather provider between [Yahoo](https://query.yah
 
 ## Usage
 
-Copy the files [weather.js](./common/weather.js) in your *commons* folder
+Copy the *common/weather* folder in your *commons* folder
 
 ### Companion
 
@@ -13,7 +13,7 @@ Create an *index.js* file in the *companion* folder if you don't already have on
 Add the following code in this file :
 
 ```javascript
-import Weather from '../common/weather';
+import Weather from '../common/weather/phone';
 let weather = new Weather();
 ```
 ### App
@@ -21,7 +21,7 @@ let weather = new Weather();
 Add the following code in your *app/index.js* file
 
 ```javascript
-import Weather from '../common/weather';
+import Weather from '../common/weather/device';
 
 let weather = new Weather();
 weather.setProvider("yahoo"); 

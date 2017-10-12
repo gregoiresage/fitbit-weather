@@ -1,20 +1,7 @@
 import { peerSocket } from "messaging";
 import { geolocation } from "geolocation";
 
-export const Conditions = {
-  ClearSky        : 0,
-  FewClouds       : 1,
-  ScatteredClouds : 2,
-  BrokenClouds    : 3,
-  ShowerRain      : 4,
-  Rain            : 5,
-  Thunderstorm    : 6,
-  Snow            : 7,
-  Mist            : 8,
-  Unknown         : 1000,
-};
-
-var WEATHER_MESSAGE_KEY = "my_awesome_weather_message";
+import { WEATHER_MESSAGE_KEY, Conditions } from './common.js';
 
 export default class Weather {
   
@@ -29,24 +16,10 @@ export default class Weather {
     this.onsuccess = undefined;
     
     peerSocket.addEventListener("message", (evt) => {
-      if(isRunningOnDevice()) {
-        if (evt.data !== undefined && evt.data[WEATHER_MESSAGE_KEY] !== undefined) {
-          // We are receiving the answer from the companion
-          if(evt.data[WEATHER_MESSAGE_KEY].error !== undefined){
-            if(this.onerror) this.onerror(evt.data[WEATHER_MESSAGE_KEY].error);
-          }
-          else {
-            this._weather = evt.data[WEATHER_MESSAGE_KEY];
-            if(this.onsuccess) this.onsuccess(evt.data[WEATHER_MESSAGE_KEY]);
-          }
-        }
-      }
-      else {
-        // We are receiving a request from the app
-        if (evt.data !== undefined && evt.data[WEATHER_MESSAGE_KEY] !== undefined) {
-          let message = evt.data[WEATHER_MESSAGE_KEY];
-          prv_fetchRemote(message.provider, message.apiKey, message.feelsLike);
-        }
+      // We are receiving a request from the app
+      if (evt.data !== undefined && evt.data[WEATHER_MESSAGE_KEY] !== undefined) {
+        let message = evt.data[WEATHER_MESSAGE_KEY];
+        prv_fetchRemote(message.provider, message.apiKey, message.feelsLike);
       }
     });
   }
@@ -75,36 +48,20 @@ export default class Weather {
       return;
     }
     
-    if(isRunningOnDevice()){
-      if (peerSocket.readyState === peerSocket.OPEN) {
-        // Send a command to the companion
-        let message = {};
-        message[WEATHER_MESSAGE_KEY] = {};
-        message[WEATHER_MESSAGE_KEY].apiKey    = this._apiKey;
-        message[WEATHER_MESSAGE_KEY].provider  = this._provider;
-        message[WEATHER_MESSAGE_KEY].feelsLike = this._feelsLike;
-        peerSocket.send(message);
-      }
-      else {
-        if(this.onerror) this.onerror("No connection with the companion");
-      }
-    }
-    else {
-      geolocation.getCurrentPosition(
-        (position) => {
-          //console.log("Latitude: " + position.coords.latitude + " Longitude: " + position.coords.longitude);
-          prv_fetch(this._provider, this._apiKey, this._feelsLike, position.coords.latitude, position.coords.longitude, 
-                (data) => {
-                  this._weather = data;
-                  if(this.onsuccess) this.onsuccess(data);
-                }, 
-                this.onerror);
-        }, 
-        (error) => {
-          if(this.onerror) this.onerror(error);
-        }, 
-        {"enableHighAccuracy" : false, "maximumAge" : 1000 * 1800});
-    }
+    geolocation.getCurrentPosition(
+      (position) => {
+        //console.log("Latitude: " + position.coords.latitude + " Longitude: " + position.coords.longitude);
+        prv_fetch(this._provider, this._apiKey, this._feelsLike, position.coords.latitude, position.coords.longitude, 
+              (data) => {
+                this._weather = data;
+                if(this.onsuccess) this.onsuccess(data);
+              }, 
+              this.onerror);
+      }, 
+      (error) => {
+        if(this.onerror) this.onerror(error);
+      }, 
+      {"enableHighAccuracy" : false, "maximumAge" : 1000 * 1800});
   }
 };
 
@@ -424,17 +381,4 @@ function prv_timeParse(str) {
   date.setMinutes(parseInt(time[1]));
 
   return date;
-}
-
-// This is just a hack to know if the javascript is running on the device or on the phone
-// I hope an API to do that will added in Fitbit OS because this solution is not satisfying
-
-import * as filetransfer from "file-transfer";
-
-function isRunningOnDevice() {
-  return filetransfer.inbox !== undefined;
-}
-
-function isRunningOnPhone() {
-  return !isRunningOnDevice();
 }
