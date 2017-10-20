@@ -2,7 +2,7 @@ import document from "document";
 import * as messaging from "messaging";
 
 // Import the weather module
-import Weather from '../common/weather';
+import Weather from '../common/weather/device';
 
 // Create the weather object
 let weather = new Weather();
