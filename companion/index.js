@@ -1,5 +1,5 @@
 // Import the weather module
-import Weather from '../common/weather';
+import Weather from '../common/weather/phone';
 
 // Create the weather object
 // this is always needed to answer the device's requests
