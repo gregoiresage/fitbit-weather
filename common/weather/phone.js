@@ -357,6 +357,10 @@ function prv_queryYahooWeather(latitude, longitude, success, error) {
           condition = Conditions.Snow; break;
         case 20 :
           condition = Conditions.Mist; break;
+        case 26 :
+        case 27 :
+        case 28 :
+          condition = Conditions.BrokenClouds; break;
         default : condition = Conditions.Unknown; break;
       }
 
