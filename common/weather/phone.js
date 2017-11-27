@@ -183,7 +183,7 @@ function prv_queryWUWeather(apiKey, feelsLike, latitude, longitude, success, err
       if(condition === 'clear'){
         condition = Conditions.ClearSky;
       }
-      else if(condition === 'mostlyysunny' || condition === 'partlycloudy'){
+      else if(condition === 'mostlysunny' || condition === 'partlycloudy'){
         condition = Conditions.FewClouds;
       }
       else if(condition === 'partlysunny' || condition === 'mostlycloudy'){
