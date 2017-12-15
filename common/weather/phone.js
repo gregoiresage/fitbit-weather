@@ -125,7 +125,7 @@ function prv_fetch(provider, apiKey, feelsLike, latitude, longitude, success, er
 }
 
 function prv_queryOWMWeather(apiKey, latitude, longitude, success, error) {
-  var url = 'http://api.openweathermap.org/data/2.5/weather?appid=' + apiKey + '&lat=' + latitude + '&lon=' + longitude;
+  var url = 'https://api.openweathermap.org/data/2.5/weather?appid=' + apiKey + '&lat=' + latitude + '&lon=' + longitude;
 
   fetch(url)
   .then((response) => {return response.json()})
@@ -168,7 +168,7 @@ function prv_queryOWMWeather(apiKey, latitude, longitude, success, error) {
 };
 
 function prv_queryWUWeather(apiKey, feelsLike, latitude, longitude, success, error) {
-  var url = 'http://api.wunderground.com/api/' + apiKey + '/conditions/q/' + latitude + ',' + longitude + '.json';
+  var url = 'https://api.wunderground.com/api/' + apiKey + '/conditions/q/' + latitude + ',' + longitude + '.json';
 
   fetch(url)
   .then((response) => {return response.json()})
@@ -282,7 +282,7 @@ function prv_queryDarkskyWeather(apiKey, feelsLike, latitude, longitude, success
       };
     
       // retreiving location name from Open Street Map
-      let url = 'http://nominatim.openstreetmap.org/reverse?lat=' + latitude + '&lon=' + longitude + '&format=json&accept-language=en-US';
+      let url = 'https://nominatim.openstreetmap.org/reverse?lat=' + latitude + '&lon=' + longitude + '&format=json&accept-language=en-US';
     
       fetch(url)
         .then((response) => {return response.json()})
