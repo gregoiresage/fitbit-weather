@@ -199,7 +199,7 @@ function prv_queryWUWeather(apiKey, feelsLike, latitude, longitude, success, err
         condition = Conditions.Thunderstorm;
       }
       else if(condition === 'snow' || condition === 'sleet' || condition === 'flurries'){
-        condition = Conditions.Thunderstorm;
+        condition = Conditions.Snow;
       }
       else if(condition === 'fog' || condition === 'hazy'){
         condition = Conditions.Mist;
@@ -257,7 +257,7 @@ function prv_queryDarkskyWeather(apiKey, feelsLike, latitude, longitude, success
         condition = Conditions.Thunderstorm;
       }
       else if(condition === 'snow' || condition === 'sleet'){
-        condition = Conditions.Thunderstorm;
+        condition = Conditions.Snow;
       }
       else if(condition === 'fog'){
         condition = Conditions.Mist;
