@@ -351,6 +351,7 @@ function prv_queryYahooWeather(latitude, longitude, success, error) {
         case 13 :
         case 14 :
         case 15 :
+        case 16 :  
         case 41 :
         case 42 :
         case 43 :
