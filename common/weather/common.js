@@ -12,3 +12,5 @@ export const Conditions = {
 };
 
 export var WEATHER_MESSAGE_KEY = "my_awesome_weather_message";
+export var WEATHER_DATA_FILE   = "my_awesome_weather_file.cbor";
+export var WEATHER_ERROR_FILE  = "my_awesome_weather_error.cbor";

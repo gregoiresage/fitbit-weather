@@ -1,7 +1,7 @@
 # Weather module for Fitbit OS
 
 This library permits to retrieve weather information from the device.  
-You can choose your favourite weather provider between [Yahoo](https://query.yahooapis.com), [OpenWeatherMap](http://api.openweathermap.org), [DarkSky](https://api.darksky.net) and [WeatherUnderground](http://api.wunderground.com)
+You can choose your favourite weather provider between [Yahoo](https://query.yahooapis.com), [OpenWeatherMap](http://api.openweathermap.org), [DarkSky](https://api.darksky.net) and [WeatherUnderground](http://api.wunderground.com) [Weatherbit](https://www.weatherbit.io/)
 
 ## Usage
 
@@ -34,7 +34,7 @@ weather.onsuccess = (data) => {
 }
 
 weather.onerror = (error) => {
-  console.log("Weather error " + JSON.stringify(error));
+  console.log("Weather error " + error);
 }
 
 weather.fetch();
@@ -47,7 +47,7 @@ weather.fetch();
 * **setFeelsLike(boolean)** : some providers can return the apparent temperature. Default is `true`
 * **setMaximumAge(int)** : set the maximum age in milliseconds of a possible cached weather data that is acceptable to return. Default is `0`
 * **onsuccess(data)** : it is the event handler when the weather data arrives
-* **onserror(error)** : it is the event handler when the library fails
+* **onerror(error)** : it is the event handler when the library fails
 * **fetch()** : retrieve the weather
 
 ## Example of result

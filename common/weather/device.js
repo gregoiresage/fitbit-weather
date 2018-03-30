@@ -1,5 +1,42 @@
 import { peerSocket } from "messaging";
-import { WEATHER_MESSAGE_KEY } from './common.js';
+import { WEATHER_MESSAGE_KEY, WEATHER_DATA_FILE, WEATHER_ERROR_FILE } from './common.js';
+import { inbox } from "file-transfer";
+import { readFileSync } from "fs";
+
+const MY_FILE_NAMES = [WEATHER_DATA_FILE,WEATHER_ERROR_FILE]
+
+let otherFiles = []
+let myFiles    = []
+
+inbox.nextFile_ = inbox.nextFile;
+inbox.nextFile = function() {
+  if(otherFiles.length > 0) {
+    return otherFiles.pop()
+  }
+  var fileName = inbox.nextFile_()
+  if (MY_FILE_NAMES.indexOf(fileName) > -1) {
+    myFiles.push(fileName)
+  }
+  else {
+    return fileName
+  }
+}
+inbox.getMyFile = function() {
+  if(myFiles.length > 0) {
+    return myFiles.pop()
+  }
+  
+  var fileName
+  do {
+    fileName = inbox.nextFile_()
+    if (MY_FILE_NAMES.indexOf(fileName) > -1) {
+      return fileName
+    }
+    otherFiles.push(fileName)
+  } while (fileName)
+  return fileName
+}
+
 
 export default class Weather {
   
@@ -7,22 +44,26 @@ export default class Weather {
     this._apiKey = '';
     this._provider = 'yahoo';
     this._feelsLike = true;
-    this._weather = undefined;
     this._maximumAge = 0;
+    
+    try {
+      this._weather = fs.readFileSync(WEATHER_DATA_FILE, "cbor");
+    } catch (n) {
+      this._weather = undefined;
+    }
 
     this.onerror = undefined;
     this.onsuccess = undefined;
     
-    peerSocket.addEventListener("message", (evt) => {
-      if (evt.data !== undefined && evt.data[WEATHER_MESSAGE_KEY] !== undefined) {
-        // We are receiving the answer from the companion
-        if(evt.data[WEATHER_MESSAGE_KEY].error !== undefined){
-          if(this.onerror) this.onerror(evt.data[WEATHER_MESSAGE_KEY].error);
-        }
-        else {
-          this._weather = evt.data[WEATHER_MESSAGE_KEY];
-          if(this.onsuccess) this.onsuccess(evt.data[WEATHER_MESSAGE_KEY]);
-        }
+    // Event occurs when new file(s) are received
+    inbox.addEventListener("newfile", (event) => {
+      var fileName = inbox.getMyFile();
+      if (fileName === WEATHER_DATA_FILE) {
+        this._weather = readFileSync(fileName, "cbor");
+        if(this.onsuccess) this.onsuccess(this._weather);
+      }
+      else if (fileName === WEATHER_ERROR_FILE) {
+        if(this.onerror) this.onerror(readFileSync(fileName, "cbor").error);
       }
     });
   }
@@ -46,22 +87,21 @@ export default class Weather {
   fetch() {
     let now = new Date().getTime();
     if(this._weather !== undefined && this._weather.timestamp !== undefined && (now - this._weather.timestamp < this._maximumAge)) {
-      // return previous weather if the maximu age is not reached
+      // return previous weather if the maximum age is not reached
       if(this.onsuccess) this.onsuccess(this._weather);
-      return;
+      return this._weather;
     }
     
     if (peerSocket.readyState === peerSocket.OPEN) {
       // Send a command to the companion
       let message = {};
-      message[WEATHER_MESSAGE_KEY] = {};
-      message[WEATHER_MESSAGE_KEY].apiKey    = this._apiKey;
-      message[WEATHER_MESSAGE_KEY].provider  = this._provider;
-      message[WEATHER_MESSAGE_KEY].feelsLike = this._feelsLike;
+      let params = { apiKey : this._apiKey, provider : this._provider, feelsLike : this._feelsLike };
+      message[WEATHER_MESSAGE_KEY] = params;
       peerSocket.send(message);
     }
     else {
       if(this.onerror) this.onerror("No connection with the companion");
     }
+    return this._weather;
   }
 };
