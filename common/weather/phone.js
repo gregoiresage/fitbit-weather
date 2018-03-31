@@ -150,6 +150,7 @@ function prv_queryOWMWeather(apiKey, latitude, longitude, success, error) {
         description : data.weather[0].description,
         isDay : (data.dt > data.sys.sunrise && data.dt < data.sys.sunset),
         conditionCode : condition,
+        realConditionCode : data.weather[0].id,
         sunrise : data.sys.sunrise * 1000,
         sunset : data.sys.sunset * 1000,
         timestamp : new Date().getTime()
@@ -210,7 +211,8 @@ function prv_queryWUWeather(apiKey, feelsLike, latitude, longitude, success, err
         location : data.current_observation.display_location.city,
         description : data.current_observation.weather,
         isDay : data.current_observation.icon_url.indexOf("nt_") == -1,
-        conditionCode :condition,
+        conditionCode : condition,
+        realConditionCode : data.current_observation.icon,
         sunrise : 0,
         sunset : 0,
         timestamp : new Date().getTime()
@@ -268,7 +270,8 @@ function prv_queryDarkskyWeather(apiKey, feelsLike, latitude, longitude, success
         location : "",
         description : data.currently.summary,
         isDay : data.currently.icon.indexOf("-day") > 0,
-        conditionCode :condition,
+        conditionCode : condition,
+        realConditionCode : data.currently.icon,
         sunrise : data.daily.data[0].sunriseTime * 1000,
         sunset : data.daily.data[0].sunsetTime * 1000,
         timestamp : new Date().getTime()
@@ -369,6 +372,7 @@ function prv_queryYahooWeather(latitude, longitude, success, error) {
         description : data.query.results.channel.item.condition.text,
         isDay : current_time >  sunrise_time && current_time < sunset_time,
         conditionCode : condition,
+        realConditionCode : data.query.results.channel.item.condition.code,
         sunrise : sunrise_time.getTime(),
         sunset : sunset_time.getTime(),
         timestamp : current_time.getTime()
@@ -457,6 +461,7 @@ function prv_queryWeatherbit(key, latitude, longitude, success, error) {
         description : data.data[0].weather.description,
         isDay : data.data[0].weather.icon.endsWith("d"),
         conditionCode : condition,
+        realConditionCode : data.data[0].weather.code,
         sunrise : data.data[0].sunrise,
         sunset : data.data[0].sunset,
         timestamp : current_time.getTime()

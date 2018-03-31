@@ -19,7 +19,6 @@ let weather = new Weather()
 
 let showWeather = function(data){
   if (data) {
-    console.log("Weather on device " + JSON.stringify(data))
     document.getElementById("temperature").text = data.temperatureC.toFixed(1) + "°C"
     document.getElementById("description").text = data.description
     document.getElementById("location").text = data.location

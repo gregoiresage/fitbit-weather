@@ -60,6 +60,7 @@ weather.fetch();
     "description":"Mostly Clear",
     "isDay":false,
     "conditionCode":0,
+    "realConditionCode":"this is the real conditioncode returned by the provider",
     "sunrise":1507442496594,
     "sunset":1507483356594,
     "timestamp":1507496916594
