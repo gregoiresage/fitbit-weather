@@ -42,7 +42,7 @@ weather.fetch();
 
 ## API
 
-* **setProvider(string)** : set the weather provider (possible values are `yahoo`, `owm`, `wunderground` or `darksky`). Default is `yahoo`
+* **setProvider(string)** : set the weather provider (possible values are `yahoo`, `owm`, `wunderground`, `darksky` or `weatherbit`). Default is `yahoo`
 * **setApiKey(string)** : set the api key for your provider. Default is ``
 * **setFeelsLike(boolean)** : some providers can return the apparent temperature. Default is `true`
 * **setMaximumAge(int)** : set the maximum age in milliseconds of a possible cached weather data that is acceptable to return. Default is `0`

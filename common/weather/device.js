@@ -8,33 +8,38 @@ const MY_FILE_NAMES = [WEATHER_DATA_FILE,WEATHER_ERROR_FILE]
 let otherFiles = []
 let myFiles    = []
 
-inbox.nextFile_ = inbox.nextFile;
+const prevNextFile = inbox.nextFile;
+
 inbox.nextFile = function() {
   if(otherFiles.length > 0) {
     return otherFiles.pop()
   }
-  var fileName = inbox.nextFile_()
-  if (MY_FILE_NAMES.indexOf(fileName) > -1) {
-    myFiles.push(fileName)
+  
+  var fileName
+  while (fileName = prevNextFile()) {
+    if (MY_FILE_NAMES.indexOf(fileName) > -1) {
+      myFiles.push(fileName)
+    }
+    else {
+      return fileName
+    }
   }
-  else {
-    return fileName
-  }
+  return undefined
 }
-inbox.getMyFile = function() {
+
+const getCustomFile = function() {
   if(myFiles.length > 0) {
     return myFiles.pop()
   }
   
   var fileName
-  do {
-    fileName = inbox.nextFile_()
+  while (fileName = prevNextFile()) {
     if (MY_FILE_NAMES.indexOf(fileName) > -1) {
       return fileName
     }
     otherFiles.push(fileName)
-  } while (fileName)
-  return fileName
+  }
+  return undefined
 }
 
 
@@ -57,7 +62,7 @@ export default class Weather {
     
     // Event occurs when new file(s) are received
     inbox.addEventListener("newfile", (event) => {
-      var fileName = inbox.getMyFile();
+      var fileName = getCustomFile();
       if (fileName === WEATHER_DATA_FILE) {
         this._weather = readFileSync(fileName, "cbor");
         if(this.onsuccess) this.onsuccess(this._weather);
