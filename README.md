@@ -49,6 +49,7 @@ weather.fetch();
 * **onsuccess(data)** : it is the event handler when the weather data arrives
 * **onerror(error)** : it is the event handler when the library fails
 * **fetch()** : retrieve the weather
+* **getData()** : returns the last known weather data. This can be useful to display the weather when your app/face starts. The old data is automatically stored by the library and restored when the Weather object is created.
 
 ## Example of result
 ```json

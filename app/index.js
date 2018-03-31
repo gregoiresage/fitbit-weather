@@ -17,14 +17,18 @@ const PROVIDERS = [
 // Create the weather object
 let weather = new Weather()
 
-// Display the weather data received from the companion
-weather.onsuccess = (data) => {
-  console.log("Weather on device " + JSON.stringify(data))
-  
-  document.getElementById("temperature").text = data.temperatureC.toFixed(1) + "°C"
-  document.getElementById("description").text = data.description
-  document.getElementById("location").text = data.location
+let showWeather = function(data){
+  if (data) {
+    console.log("Weather on device " + JSON.stringify(data))
+    document.getElementById("temperature").text = data.temperatureC.toFixed(1) + "°C"
+    document.getElementById("description").text = data.description
+    document.getElementById("location").text = data.location
+    document.getElementById("provider").text = data.provider.toUpperCase()
+  }
 }
+
+// Display the weather data received from the companion
+weather.onsuccess = showWeather
 
 weather.onerror = (error) => {
   console.log("Weather error " + JSON.stringify(error))
@@ -45,6 +49,8 @@ let fetchWeather = function(){
   
   weather.fetch()
 }
+
+showWeather( weather.getData() )
 
 // Listen for the onopen event
 messaging.peerSocket.onopen = function() {

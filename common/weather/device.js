@@ -89,6 +89,10 @@ export default class Weather {
     this._maximumAge = maximumAge;
   }
   
+  getData() {
+    return this._weather;
+  }
+  
   fetch() {
     let now = new Date().getTime();
     if(this._weather !== undefined && this._weather.timestamp !== undefined && (now - this._weather.timestamp < this._maximumAge)) {

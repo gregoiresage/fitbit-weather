@@ -21,7 +21,6 @@ export default class Weather {
       // We are receiving a request from the app
       if (evt.data !== undefined && evt.data[WEATHER_MESSAGE_KEY] !== undefined) {
         let message = evt.data[WEATHER_MESSAGE_KEY];
-        console.log("fetching " + message.provider)
         prv_fetchRemote(message.provider, message.apiKey, message.feelsLike);
       }
     });
@@ -56,6 +55,7 @@ export default class Weather {
         //console.log("Latitude: " + position.coords.latitude + " Longitude: " + position.coords.longitude);
         prv_fetch(this._provider, this._apiKey, this._feelsLike, position.coords.latitude, position.coords.longitude, 
               (data) => {
+                data.provider = this._provider;
                 this._weather = data;
                 if(this.onsuccess) this.onsuccess(data);
               }, 
@@ -77,6 +77,7 @@ function prv_fetchRemote(provider, apiKey, feelsLike) {
     (position) => {
       prv_fetch(provider, apiKey, feelsLike, position.coords.latitude, position.coords.longitude,
           (data) => {
+            data.provider = provider;
             outbox
               .enqueue(WEATHER_DATA_FILE, cbor.encode(data))
               .catch(error => console.log("Failed to send weather: " + error));
