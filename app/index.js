@@ -8,18 +8,20 @@ let provider = 0
 // Enter your own api keys below
 const PROVIDERS = [
   { name : 'yahoo', key : '' },
-  { name : 'owm', key : '' },
-  { name : 'wunderground', key : '' },
-  { name : 'darksky', key : '' },
-  { name : 'weatherbit', key : '' }
+  { name : 'owm', key : 'f60ffe47836c837d1946ba1912f0a05b' },
+  { name : 'wunderground', key : 'b70e57a4f9a85be1' },
+  { name : 'darksky', key : '764338e7a6a5410782f1b817d73107e6' },
+  { name : 'weatherbit', key : '66aabb6aee9c45e9be3ba3f4431b7cad' }
 ]
 
 // Create the weather object
 let weather = new Weather()
+let unit = 'c'
+weather.setUnit(unit);
 
 let showWeather = function(data){
   if (data) {
-    document.getElementById("temperature").text = data.temperatureC.toFixed(1) + "°C"
+    document.getElementById("temperature").text = data.temperature.toFixed(1) + "°" + unit.toUpperCase();
     document.getElementById("description").text = data.description
     document.getElementById("location").text = data.location
     document.getElementById("provider").text = data.provider.toUpperCase()
