@@ -8,10 +8,10 @@ let provider = 0
 // Enter your own api keys below
 const PROVIDERS = [
   { name : 'yahoo', key : '' },
-  { name : 'owm', key : '***REMOVED***' },
-  { name : 'wunderground', key : '***REMOVED***' },
-  { name : 'darksky', key : '***REMOVED***' },
-  { name : 'weatherbit', key : '***REMOVED***' }
+  { name : 'owm', key : '' },
+  { name : 'wunderground', key : '' },
+  { name : 'darksky', key : '' },
+  { name : 'weatherbit', key : '' }
 ]
 
 // Create the weather object
