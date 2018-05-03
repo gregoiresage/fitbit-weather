@@ -52,7 +52,7 @@ export default class Weather {
     this._maximumAge = 0;
     
     try {
-      this._weather = fs.readFileSync(WEATHER_DATA_FILE, "cbor");
+      this._weather = readFileSync(WEATHER_DATA_FILE, "cbor");
     } catch (n) {
       this._weather = undefined;
     }
