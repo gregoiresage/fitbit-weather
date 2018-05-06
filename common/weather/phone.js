@@ -13,6 +13,7 @@ export default class Weather {
     this._feelsLike = true;
     this._weather = undefined;
     this._maximumAge = 0;
+    this._unit = 'c'
 
     this.onerror = undefined;
     this.onsuccess = undefined;
@@ -21,13 +22,20 @@ export default class Weather {
       // We are receiving a request from the app
       if (evt.data !== undefined && evt.data[WEATHER_MESSAGE_KEY] !== undefined) {
         let message = evt.data[WEATHER_MESSAGE_KEY];
-        prv_fetchRemote(message.provider, message.apiKey, message.feelsLike);
+        prv_fetchRemote(message.provider, message.apiKey, message.feelsLike, message.unit);
       }
     });
   }
   
   setApiKey(apiKey) {
     this._apiKey = apiKey;
+  }
+  
+  setUnit(unit){
+    if (unit == "f")
+      this._unit = 'f';
+    else
+      this._unit = 'c'
   }
   
   setProvider(provider) {
@@ -53,7 +61,7 @@ export default class Weather {
     geolocation.getCurrentPosition(
       (position) => {
         //console.log("Latitude: " + position.coords.latitude + " Longitude: " + position.coords.longitude);
-        prv_fetch(this._provider, this._apiKey, this._feelsLike, position.coords.latitude, position.coords.longitude, 
+        prv_fetch(this._provider, this._apiKey, this._feelsLike, message.unit, position.coords.latitude, position.coords.longitude, 
               (data) => {
                 data.provider = this._provider;
                 this._weather = data;
@@ -72,10 +80,10 @@ export default class Weather {
 /*********** PRIVATE FUNCTIONS  ************/
 /*******************************************/
 
-function prv_fetchRemote(provider, apiKey, feelsLike) {
+function prv_fetchRemote(provider, apiKey, feelsLike, unit) {
   geolocation.getCurrentPosition(
     (position) => {
-      prv_fetch(provider, apiKey, feelsLike, position.coords.latitude, position.coords.longitude,
+      prv_fetch(provider, apiKey, feelsLike, unit, position.coords.latitude, position.coords.longitude,
           (data) => {
             data.provider = provider;
             outbox
@@ -97,29 +105,35 @@ function prv_fetchRemote(provider, apiKey, feelsLike) {
     {"enableHighAccuracy" : false, "maximumAge" : 1000 * 1800});
 }
 
-function prv_fetch(provider, apiKey, feelsLike, latitude, longitude, success, error) {
+function prv_fetch(provider, apiKey, feelsLike, unit, latitude, longitude, success, error) {
   // console.log("Latitude: " + latitude + " Longitude: " + longitude);
   if( provider === "owm" ) {
-    prv_queryOWMWeather(apiKey, latitude, longitude, success, error);
+    prv_queryOWMWeather(apiKey, latitude, longitude, unit, success, error);
   }
   else if( provider === "wunderground" ) {
-    prv_queryWUWeather(apiKey, feelsLike, latitude, longitude, success, error);
+    prv_queryWUWeather(apiKey, feelsLike, latitude, longitude, unit, success, error);
   }
   else if( provider === "darksky" ) {
-    prv_queryDarkskyWeather(apiKey, feelsLike, latitude, longitude, success, error);
+    prv_queryDarkskyWeather(apiKey, feelsLike, latitude, longitude, unit, success, error);
   }
   else if( provider === "weatherbit" ) {
-    prv_queryWeatherbit(apiKey, latitude, longitude, success, error);
+    prv_queryWeatherbit(apiKey, latitude, longitude, unit, success, error);
   }
   else 
   {
-    prv_queryYahooWeather(latitude, longitude, success, error);
+    prv_queryYahooWeather(latitude, longitude, unit, success, error);
   }
 }
 
-function prv_queryOWMWeather(apiKey, latitude, longitude, success, error) {
-  var url = 'https://api.openweathermap.org/data/2.5/weather?appid=' + apiKey + '&lat=' + latitude + '&lon=' + longitude;
-
+function prv_queryOWMWeather(apiKey, latitude, longitude, unit, success, error) {
+  if (unit == 'f')
+    unit = 'imperial'
+  else
+    unit = 'metric'
+  
+  var url = 'https://api.openweathermap.org/data/2.5/weather?appid=' + apiKey + '&lat=' + latitude + '&lon=' + longitude + '&units=' + unit;
+  console.log("Open Weather Map: " + url)
+  
   fetch(url)
   .then((response) => {return response.json()})
   .then((data) => { 
@@ -144,6 +158,7 @@ function prv_queryOWMWeather(apiKey, latitude, longitude, success, error) {
       }
       let weather = {
         //temperatureK : data.main.temp.toFixed(1),
+        temperature : data.main.temp,
         temperatureC : data.main.temp - 273.15,
         temperatureF : (data.main.temp - 273.15)*9/5 + 32,
         location : data.name,
@@ -161,9 +176,10 @@ function prv_queryOWMWeather(apiKey, latitude, longitude, success, error) {
   .catch((err) => { if(error) error(err); });
 };
 
-function prv_queryWUWeather(apiKey, feelsLike, latitude, longitude, success, error) {
+function prv_queryWUWeather(apiKey, feelsLike, latitude, longitude, unit, success, error) {
   var url = 'https://api.wunderground.com/api/' + apiKey + '/conditions/q/' + latitude + ',' + longitude + '.json';
-
+  console.log("Weather Underground: " + url)
+  
   fetch(url)
   .then((response) => {return response.json()})
   .then((data) => { 
@@ -201,11 +217,15 @@ function prv_queryWUWeather(apiKey, feelsLike, latitude, longitude, success, err
       else {
         condition = Conditions.Unknown;
       }
-
-      var temp = feelsLike ? parseFloat(data.current_observation.feelslike_c) : data.current_observation.temp_c;
+ 
+      if (unit  == 'f')
+        var temp = feelsLike ? parseFloat(data.current_observation.feelslike_f) : data.current_observation.temp_f;
+      else
+        var temp = feelsLike ? parseFloat(data.current_observation.feelslike_c) : data.current_observation.temp_c;
 
       let weather = {
         //temperatureK : (temp + 273.15).toFixed(1),
+        temperature : temp,
         temperatureC : temp,
         temperatureF : (temp*9/5 + 32),
         location : data.current_observation.display_location.city,
@@ -223,9 +243,14 @@ function prv_queryWUWeather(apiKey, feelsLike, latitude, longitude, success, err
   .catch((err) => { if(error) error(err); });
 };
 
-function prv_queryDarkskyWeather(apiKey, feelsLike, latitude, longitude, success, error) {
-  let url = 'https://api.darksky.net/forecast/' + apiKey + '/' + latitude + ',' + longitude + '?exclude=minutely,hourly,alerts,flags&units=si';
-
+function prv_queryDarkskyWeather(apiKey, feelsLike, latitude, longitude, unit, success, error) {
+  if (unit == 'f')
+    unit = 'us'
+  else
+    unit = 'si'
+  let url = 'https://api.darksky.net/forecast/' + apiKey + '/' + latitude + ',' + longitude + '?exclude=minutely,hourly,alerts,flags&units=' + unit;
+  console.log("Darksky: " + url)
+  
   fetch(url)
   .then((response) => {return response.json()})
   .then((data) => {       
@@ -265,6 +290,7 @@ function prv_queryDarkskyWeather(apiKey, feelsLike, latitude, longitude, success
 
       let weather = {
         //temperatureK : (temp + 273.15).toFixed(1),
+        temperature : temp,
         temperatureC : temp,
         temperatureF : (temp*9/5 + 32),
         location : "",
@@ -299,10 +325,10 @@ function prv_queryDarkskyWeather(apiKey, feelsLike, latitude, longitude, success
   .catch((err) => { if(error) error(err); });
 };
 
-function prv_queryYahooWeather(latitude, longitude, success, error) {
+function prv_queryYahooWeather(latitude, longitude, unit, success, error) {
   var url = 'https://query.yahooapis.com/v1/public/yql?q=select astronomy, location.city, item.condition from weather.forecast where woeid in '+
-          '(select woeid from geo.places(1) where text=\'(' + latitude+','+longitude+')\') and u=\'c\'&format=json';
-
+          '(select woeid from geo.places(1) where text=\'(' + latitude+','+longitude+')\') and u=\''+ unit +'\'&format=json';
+  console.log("Yahoo: " + url)
   fetch(encodeURI(url))
   .then((response) => {
     response.json()
@@ -366,6 +392,7 @@ function prv_queryYahooWeather(latitude, longitude, success, error) {
       var sunset_time  = prv_timeParse(data.query.results.channel.astronomy.sunset);
       let weather = {
         //temperatureK : (parseInt(data.query.results.channel.item.condition.temp) + 273.15),
+        temperature : parseInt(data.query.results.channel.item.condition.temp),
         temperatureC : parseInt(data.query.results.channel.item.condition.temp),
         temperatureF : (parseInt(data.query.results.channel.item.condition.temp) * 9/5 + 32),
         location : data.query.results.channel.location.city,
@@ -386,8 +413,13 @@ function prv_queryYahooWeather(latitude, longitude, success, error) {
   });
 };
 
-function prv_queryWeatherbit(key, latitude, longitude, success, error) {
-  var url = 'https://api.weatherbit.io/v2.0/current?key='+key+'&lat='+latitude+'&lon='+longitude;
+function prv_queryWeatherbit(key, latitude, longitude, unit, success, error) {
+  if (unit == 'f')
+    unit = 'I'
+  else
+    unit = 'M'
+  var url = 'https://api.weatherbit.io/v2.0/current?key='+key+'&lat='+latitude+'&lon='+longitude+'&units='+unit;
+  console.log("Weatherbit: " + url)
 
   fetch(encodeURI(url))
   .then((response) => {
@@ -454,6 +486,7 @@ function prv_queryWeatherbit(key, latitude, longitude, success, error) {
       var current_time = new Date();
       var temp = data.data[0].temp;
       let weather = {
+        temperature : temp,
         temperatureC : temp,
         temperatureF : (temp * 9/5 + 32),
         conditionCode : data.data[0].weather.code,

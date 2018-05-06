@@ -50,6 +50,7 @@ export default class Weather {
     this._provider = 'yahoo';
     this._feelsLike = true;
     this._maximumAge = 0;
+    this._unit = 'c'
     
     try {
       this._weather = readFileSync(WEATHER_DATA_FILE, "cbor");
@@ -75,6 +76,13 @@ export default class Weather {
   
   setApiKey(apiKey) {
     this._apiKey = apiKey;
+  }
+  
+  setUnit(unit){
+    if (unit == "f")
+      this._unit = 'f';
+    else
+      this._unit = 'c'
   }
   
   setProvider(provider) {
@@ -104,7 +112,7 @@ export default class Weather {
     if (peerSocket.readyState === peerSocket.OPEN) {
       // Send a command to the companion
       let message = {};
-      let params = { apiKey : this._apiKey, provider : this._provider, feelsLike : this._feelsLike };
+      let params = { apiKey : this._apiKey, provider : this._provider, feelsLike : this._feelsLike, unit : this._unit };
       message[WEATHER_MESSAGE_KEY] = params;
       peerSocket.send(message);
     }

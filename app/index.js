@@ -16,10 +16,12 @@ const PROVIDERS = [
 
 // Create the weather object
 let weather = new Weather()
+let unit = 'c'
+weather.setUnit(unit);
 
 let showWeather = function(data){
   if (data) {
-    document.getElementById("temperature").text = data.temperatureC.toFixed(1) + "°C"
+    document.getElementById("temperature").text = data.temperature.toFixed(1) + "°" + unit.toUpperCase();
     document.getElementById("description").text = data.description
     document.getElementById("location").text = data.location
     document.getElementById("provider").text = data.provider.toUpperCase()
