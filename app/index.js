@@ -60,3 +60,9 @@ document.getElementById("change_provider").onclick = function(e) {
   provider = (++provider) % PROVIDERS.length
   fetchWeather()
 }
+
+function refresh_weather () {
+ featchWeather()
+  console.log("Fetching New Weather")
+}
+setInterval(refresh_weather, 29 * 60 * 1000)
