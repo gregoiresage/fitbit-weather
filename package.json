@@ -1,22 +1,31 @@
 {
-  "fitbit": {
-    "appUUID": "ddc34791-4695-4eab-9047-e9f0ee89f021",
-    "appType": "app",
-    "appDisplayName": "Weather-Demo",
-    "iconFile": "resources/icon.png",
-    "wipeColor": "#2196f3",
-    "requestedPermissions": [
-      "access_location",
-      "access_internet"
-    ],
-    "buildTargets": [
-      "higgs",
-      "meson"
-    ],
-    "i18n": {
-      "en": {
-        "name": "Weather-Demo"
-      }
-    }
+  "name": "fitbit-weather",
+  "description": "This library permits to retrieve weather data from the device",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "babel source --out-dir .",
+    "prepublish": "npm run build"
+  },
+  "babel": {
+    "presets": [
+      ["es2015", { "modules": false }]
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gregoiresage/fitbit-weather.git"
+  },
+  "keywords": [
+    "fitbitdev"
+  ],
+  "author": "Grégoire Sage",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gregoiresage/fitbit-weather/issues"
+  },
+  "homepage": "https://github.com/gregoiresage/fitbit-weather#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1"
   }
 }
