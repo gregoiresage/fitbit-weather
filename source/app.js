@@ -1,5 +1,5 @@
 import { peerSocket } from 'messaging'
-import { readFileSync } from 'fs'
+import { readFileSync, writeFileSync } from 'fs'
 import { WEATHER_MESSAGE_KEY } from './common'
 export { Conditions } from './common'
 
