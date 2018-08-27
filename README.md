@@ -26,7 +26,7 @@ Add the following code in your *app/index.js* file
 ```javascript
 import * as weather from 'fitbit-weather/app'
 
-weather.fetch()
+weather.fetch(30 * 60 * 1000) // return the cached value if it is less than 30 minutes old 
   .then(weather => console.log(JSON.stringify(weather)))
   .catch(error => console.log(JSON.stringify(error)))
 ```
@@ -35,6 +35,7 @@ weather.fetch()
 
 * **companion.setup({ provider, apiKey})** : configure the provider / apiKey used to fetch the weather
 * **app.fetch(maximumAge = 0)** : retrieve the weather, if given the parameter is the maximum age in milliseconds of a possible cached weather data that is acceptable to return. Default is `0`
+* **app.get()** : returns immediately the last cached weather data (the value can be `undefined` when no data has been received)
 
 ## Example of result
 ```json

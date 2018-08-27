@@ -1,7 +1,7 @@
 {
   "name": "fitbit-weather",
   "description": "This library permits to retrieve weather data from the device",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "scripts": {
     "build": "babel source --out-dir .",
     "prepublish": "npm run build"

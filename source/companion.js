@@ -1,7 +1,7 @@
 import { peerSocket } from "messaging"
 import { geolocation } from "geolocation"
 
-import { WEATHER_MESSAGE_KEY, Conditions, Providers } from './common'
+import { Conditions, Providers } from './common'
 export { Conditions, Providers } from './common'
 
 const conf = {
@@ -19,19 +19,197 @@ export const setup = ({ provider = Providers.yahoo, apiKey = '', feelsLike = fal
 
   if (conf.init === false) {
     peerSocket.addEventListener('message', (evt) => {
+      const { weather_message_id } = evt.data
       // We are receiving a request from the app
-      if (evt.data !== undefined && evt.data[WEATHER_MESSAGE_KEY] !== undefined) {
+      if (weather_message_id) {
         fetchWeather(conf.provider, conf.apiKey, conf.feelsLike)
           .then(data => {
-            peerSocket.send({ [WEATHER_MESSAGE_KEY]: 0, data })
+            peerSocket.send({ weather_message_id, data })
           })
           .catch((error) => {
-            peerSocket.send({ [WEATHER_MESSAGE_KEY]: 0, error })
+            peerSocket.send({ weather_message_id, error })
           })
       }
     })
   }
 }
+
+let mapping_codes = {
+  [Providers.yahoo] : {
+    "31": Conditions.ClearSky,
+    "32": Conditions.ClearSky,
+    "33": Conditions.ClearSky,
+    "34": Conditions.ClearSky,
+    "29": Conditions.FewClouds,
+    "30": Conditions.FewClouds,
+    "44": Conditions.FewClouds,
+    "8": Conditions.ShowerRain,
+    "9": Conditions.ShowerRain,
+    "6": Conditions.Rain,
+    "10": Conditions.Rain,
+    "11": Conditions.Rain,
+    "12": Conditions.Rain,
+    "35": Conditions.Rain,
+    "40": Conditions.Rain,
+    "1": Conditions.Thunderstorm,
+    "3": Conditions.Thunderstorm,
+    "4": Conditions.Thunderstorm,
+    "37": Conditions.Thunderstorm,
+    "38": Conditions.Thunderstorm,
+    "39": Conditions.Thunderstorm,
+    "47": Conditions.Thunderstorm,
+    "5": Conditions.Snow,
+    "7": Conditions.Snow,
+    "13": Conditions.Snow,
+    "14": Conditions.Snow,
+    "15": Conditions.Snow,
+    "16": Conditions.Snow,
+    "41": Conditions.Snow,
+    "42": Conditions.Snow,
+    "43": Conditions.Snow,
+    "20": Conditions.Mist,
+    "26": Conditions.BrokenClouds,
+    "27": Conditions.BrokenClouds,
+    "28": Conditions.BrokenClouds
+  },
+  [Providers.openweathermap] : {
+    200 : Conditions.Thunderstorm,
+    201 : Conditions.Thunderstorm,
+    202 : Conditions.Thunderstorm,
+    210 : Conditions.Thunderstorm,
+    211 : Conditions.Thunderstorm,
+    212 : Conditions.Thunderstorm,
+    221 : Conditions.Thunderstorm,
+    230 : Conditions.Thunderstorm,
+    231 : Conditions.Thunderstorm,
+    232 : Conditions.Thunderstorm,
+
+    300: Conditions.Snow,
+    301: Conditions.Snow,
+    302: Conditions.Snow,
+    310: Conditions.Snow,
+    311: Conditions.Snow,
+    312: Conditions.Snow,
+    313: Conditions.Snow,
+    314: Conditions.Snow,
+    321: Conditions.Snow,
+
+    500: Conditions.Rain,
+    501: Conditions.Rain,
+    502: Conditions.Rain,
+    503: Conditions.Rain,
+    504: Conditions.Rain,
+    511: Conditions.Rain,
+    520: Conditions.ShowerRain,
+    521: Conditions.ShowerRain,
+    522: Conditions.ShowerRain,
+    531: Conditions.ShowerRain,
+
+    600: Conditions.Snow,
+    601: Conditions.Snow,
+    602: Conditions.Snow,
+    611: Conditions.Snow,
+    612: Conditions.Snow,
+    615: Conditions.Snow,
+    616: Conditions.Snow,
+    620: Conditions.Snow,
+    621: Conditions.Snow,
+    622: Conditions.Snow,
+
+    701: Conditions.Mist,
+    711: Conditions.Mist,
+    721: Conditions.Mist,
+    731: Conditions.Mist,
+    741: Conditions.Mist,
+    // 751: ,
+    // 761: ,
+    // 762: ,
+    // 771: ,
+    // 781: ,
+
+    800: Conditions.ClearSky,
+
+    801: Conditions.FewClouds,
+    802: Conditions.ScatteredClouds,
+    803: Conditions.BrokenClouds,
+    804: Conditions.BrokenClouds
+  },
+  [Providers.wunderground] : {
+    'clear' : Conditions.ClearSky,
+    'mostlysunny' : Conditions.FewClouds,
+    'partlycloudy' : Conditions.FewClouds,
+    'partlysunny' : Conditions.ScatteredClouds,
+    'mostlycloudy' : Conditions.ScatteredClouds,
+    'cloudy' : Conditions.BrokenClouds,
+    'rain' : Conditions.Rain,
+    'tstorm' : Conditions.Thunderstorm,
+    'snow' : Conditions.Snow,
+    'sleet' : Conditions.Snow,
+    'flurries' : Conditions.Snow,
+    'fog' : Conditions.Mist,
+    'hazy' : Conditions.Mist
+  },
+  [Providers.darksky] : {
+    'clear-day' : Conditions.ClearSky,
+    'clear-night' : Conditions.ClearSky,
+    'partly-cloudy-day' : Conditions.FewClouds,
+    'partly-cloudy-night' : Conditions.FewClouds,
+    'cloudy' : Conditions.BrokenClouds,
+    'rain' : Conditions.Rain,
+    'thunderstorm' : Conditions.Thunderstorm,
+    'snow' : Conditions.Snow,
+    'sleet' : Conditions.Snow,
+    'fog' : Conditions.Mist
+  },
+  [Providers.weatherbit] : {
+    "200": Conditions.Thunderstorm,
+    "201": Conditions.Thunderstorm,
+    "202": Conditions.Thunderstorm,
+    "230": Conditions.Thunderstorm,
+    "231": Conditions.Thunderstorm,
+    "232": Conditions.Thunderstorm,
+    "233": Conditions.Thunderstorm,
+    "300": Conditions.Snow,
+    "301": Conditions.Snow,
+    "302": Conditions.Snow,
+    "500": Conditions.Rain,
+    "501": Conditions.Rain,
+    "502": Conditions.Rain,
+    "511": Conditions.Rain,
+    "520": Conditions.ShowerRain,
+    "521": Conditions.ShowerRain,
+    "522": Conditions.ShowerRain,
+    
+    "600": Conditions.Snow,
+    "601": Conditions.Snow,
+    "602": Conditions.Snow,
+    "603": Conditions.Snow,
+    "610": Conditions.Snow,
+    "611": Conditions.Snow,
+    "612": Conditions.Snow,
+    "621": Conditions.Snow,
+    "622": Conditions.Snow,
+    "623": Conditions.Snow,
+
+    "700": Conditions.Mist,
+    "711": Conditions.Mist,
+    "721": Conditions.Mist,
+    "731": Conditions.Mist,
+    "741": Conditions.Mist,
+    "751": Conditions.Mist,
+
+    "800": Conditions.ClearSky,
+    "801": Conditions.FewClouds,
+    "802": Conditions.ScatteredClouds,
+    "803": Conditions.BrokenClouds,
+    "804": Conditions.BrokenClouds,
+
+    "900": Conditions.Unknown
+  }
+}
+
+export const setCustomCodes = (codes) => (mapping_codes = codes)
+
 
 const fetchOWMWeather = (apiKey, feelsLike, latitude, longitude) => {
   return new Promise((resolve, reject) => {
@@ -48,32 +226,19 @@ const fetchOWMWeather = (apiKey, feelsLike, latitude, longitude) => {
           return
         }
 
-        let condition = parseInt(data.weather[0].icon.substring(0, 2), 10)
-        switch (condition) {
-          case 1: condition = Conditions.ClearSky; break;
-          case 2: condition = Conditions.FewClouds; break;
-          case 3: condition = Conditions.ScatteredClouds; break;
-          case 4: condition = Conditions.BrokenClouds; break;
-          case 9: condition = Conditions.ShowerRain; break;
-          case 10: condition = Conditions.Rain; break;
-          case 11: condition = Conditions.Thunderstorm; break;
-          case 13: condition = Conditions.Snow; break;
-          case 50: condition = Conditions.Mist; break;
-          default: condition = Conditions.Unknown; break;
-        }
-
+        let condition = data.weather[0].id
+        condition = mapping_codes[Providers.openweathermap][condition]
+        
         const weather = {
-          //temperatureK : data.main.temp.toFixed(1),
           temperatureC: data.main.temp - 273.15,
           temperatureF: (data.main.temp - 273.15) * 9 / 5 + 32,
           location: data.name,
           description: data.weather[0].description,
           isDay: (data.dt > data.sys.sunrise && data.dt < data.sys.sunset),
-          conditionCode: condition,
+          conditionCode : condition !== undefined ? condition : Conditions.Unknown,
           realConditionCode: data.weather[0].id,
           sunrise: data.sys.sunrise * 1000,
-          sunset: data.sys.sunset * 1000,
-          timestamp: new Date().getTime()
+          sunset: data.sys.sunset * 1000
         }
 
         // Send the weather data to the device
@@ -98,48 +263,20 @@ const fetchWUWeather = (apiKey, feelsLike, latitude, longitude) => {
         }
 
         let condition = data.current_observation.icon
-        if (condition === 'clear') {
-          condition = Conditions.ClearSky
-        }
-        else if (condition === 'mostlysunny' || condition === 'partlycloudy') {
-          condition = Conditions.FewClouds
-        }
-        else if (condition === 'partlysunny' || condition === 'mostlycloudy') {
-          condition = Conditions.ScatteredClouds
-        }
-        else if (condition === 'cloudy') {
-          condition = Conditions.BrokenClouds
-        }
-        else if (condition === 'rain') {
-          condition = Conditions.Rain
-        }
-        else if (condition === 'tstorm') {
-          condition = Conditions.Thunderstorm
-        }
-        else if (condition === 'snow' || condition === 'sleet' || condition === 'flurries') {
-          condition = Conditions.Snow
-        }
-        else if (condition === 'fog' || condition === 'hazy') {
-          condition = Conditions.Mist
-        }
-        else {
-          condition = Conditions.Unknown
-        }
+        condition = mapping_codes[Providers.wunderground][condition]
 
         var temp = feelsLike ? parseFloat(data.current_observation.feelslike_c) : data.current_observation.temp_c
 
         const weather = {
-          //temperatureK : (temp + 273.15).toFixed(1),
           temperatureC: temp,
           temperatureF: (temp * 9 / 5 + 32),
           location: data.current_observation.display_location.city,
           description: data.current_observation.weather,
           isDay: data.current_observation.icon_url.indexOf("nt_") == -1,
-          conditionCode: condition,
+          conditionCode : condition !== undefined ? condition : Conditions.Unknown,
           realConditionCode: data.current_observation.icon,
           sunrise: 0,
-          sunset: 0,
-          timestamp: new Date().getTime()
+          sunset: 0
         }
 
         // Send the weather data to the device
@@ -165,45 +302,20 @@ const fetchDarkskyWeather = (apiKey, feelsLike, latitude, longitude) => {
         }
 
         let condition = data.currently.icon
-        if (condition === 'clear-day' || condition === 'clear-night') {
-          condition = Conditions.ClearSky
-        }
-        else if (condition === 'partly-cloudy-day' || condition === 'partly-cloudy-night') {
-          condition = Conditions.FewClouds
-        }
-        else if (condition === 'cloudy') {
-          condition = Conditions.BrokenClouds
-        }
-        else if (condition === 'rain') {
-          condition = Conditions.Rain
-        }
-        else if (condition === 'thunderstorm') {
-          condition = Conditions.Thunderstorm
-        }
-        else if (condition === 'snow' || condition === 'sleet') {
-          condition = Conditions.Snow
-        }
-        else if (condition === 'fog') {
-          condition = Conditions.Mist
-        }
-        else {
-          condition = Conditions.Unknown
-        }
+        condition = mapping_codes[Providers.darksky][condition]
 
         var temp = feelsLike ? data.currently.apparentTemperature : data.currently.temperature
 
         let weather = {
-          //temperatureK : (temp + 273.15).toFixed(1),
           temperatureC: temp,
           temperatureF: (temp * 9 / 5 + 32),
           location: "",
           description: data.currently.summary,
           isDay: data.currently.icon.indexOf("-day") > 0,
-          conditionCode: condition,
+          conditionCode : condition !== undefined ? condition : Conditions.Unknown,
           realConditionCode: data.currently.icon,
           sunrise: data.daily.data[0].sunriseTime * 1000,
-          sunset: data.daily.data[0].sunsetTime * 1000,
-          timestamp: new Date().getTime()
+          sunset: data.daily.data[0].sunsetTime * 1000
         }
 
         // retreiving location name from Open Street Map
@@ -245,70 +357,23 @@ const fetchYahooWeather = (apiKey, feelsLike, latitude, longitude) => {
           return
         }
 
-        var condition = parseInt(data.query.results.channel.item.condition.code)
-        switch (condition) {
-          case 31:
-          case 32:
-          case 33:
-          case 34:
-            condition = Conditions.ClearSky; break;
-          case 29:
-          case 30:
-          case 44:
-            condition = Conditions.FewClouds; break;
-          case 8:
-          case 9:
-            condition = Conditions.ShowerRain; break;
-          case 6:
-          case 10:
-          case 11:
-          case 12:
-          case 35:
-          case 40:
-            condition = Conditions.Rain; break;
-          case 1:
-          case 3:
-          case 4:
-          case 37:
-          case 38:
-          case 39:
-          case 47:
-            condition = Conditions.Thunderstorm; break;
-          case 5:
-          case 7:
-          case 13:
-          case 14:
-          case 15:
-          case 16:
-          case 41:
-          case 42:
-          case 43:
-            condition = Conditions.Snow; break;
-          case 20:
-            condition = Conditions.Mist; break;
-          case 26:
-          case 27:
-          case 28:
-            condition = Conditions.BrokenClouds; break;
-          default: condition = Conditions.Unknown; break;
-        }
+        var condition = data.query.results.channel.item.condition.code
+        condition = mapping_codes[Providers.yahoo][condition]
 
         const current_time = new Date()
         const sunrise_time = prv_timeParse(data.query.results.channel.astronomy.sunrise)
         const sunset_time = prv_timeParse(data.query.results.channel.astronomy.sunset)
 
         const weather = {
-          //temperatureK : (parseInt(data.query.results.channel.item.condition.temp) + 273.15),
           temperatureC: parseInt(data.query.results.channel.item.condition.temp),
           temperatureF: (parseInt(data.query.results.channel.item.condition.temp) * 9 / 5 + 32),
           location: data.query.results.channel.location.city,
           description: data.query.results.channel.item.condition.text,
           isDay: current_time > sunrise_time && current_time < sunset_time,
-          conditionCode: condition,
+          conditionCode : condition !== undefined ? condition : Conditions.Unknown,
           realConditionCode: data.query.results.channel.item.condition.code,
           sunrise: sunrise_time.getTime(),
-          sunset: sunset_time.getTime(),
-          timestamp: current_time.getTime()
+          sunset: sunset_time.getTime()
         }
 
         // Send the weather data to the device
@@ -331,57 +396,8 @@ const fetchWeatherbit = (apiKey, feelsLike, latitude, longitude) => {
           return;
         }
 
-        let condition = parseInt(data.data[0].weather.code)
-        switch (condition) {
-          case 200:
-          case 201:
-          case 202:
-          case 230:
-          case 231:
-          case 232:
-          case 233:
-            condition = Conditions.Thunderstorm; break;
-          case 520:
-          case 521:
-          case 522:
-            condition = Conditions.ShowerRain; break;
-          case 500:
-          case 501:
-          case 502:
-          case 511:
-            condition = Conditions.Rain; break;
-          case 300:
-          case 301:
-          case 302:
-          case 600:
-          case 601:
-          case 602:
-          case 603:
-          case 610:
-          case 611:
-          case 612:
-          case 621:
-          case 622:
-          case 623:
-            condition = Conditions.Snow; break;
-          case 700:
-          case 711:
-          case 721:
-          case 731:
-          case 741:
-          case 751:
-            condition = Conditions.Mist; break;
-          case 800:
-            condition = Conditions.ClearSky; break;
-          case 801:
-            condition = Conditions.FewClouds; break;
-          case 802:
-            condition = Conditions.ScatteredClouds; break;
-          case 803:
-          case 804:
-            condition = Conditions.BrokenClouds; break;
-          default: condition = Conditions.Unknown; break;
-        }
+        let condition = data.data[0].weather.code
+        condition = mapping_codes[Providers.weatherbit][condition]
 
         const current_time = new Date()
         const temp = data.data[0].temp
@@ -393,11 +409,10 @@ const fetchWeatherbit = (apiKey, feelsLike, latitude, longitude) => {
           location: data.data[0].city_name,
           description: data.data[0].weather.description,
           isDay: data.data[0].weather.icon.endsWith("d"),
-          conditionCode: condition,
+          conditionCode : condition !== undefined ? condition : Conditions.Unknown,
           realConditionCode: data.data[0].weather.code,
           sunrise: data.data[0].sunrise,
-          sunset: data.data[0].sunset,
-          timestamp: current_time.getTime()
+          sunset: data.data[0].sunset
         }
         
         // Send the weather data to the device

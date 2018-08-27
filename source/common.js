@@ -8,7 +8,7 @@ export const Conditions = {
   Thunderstorm    : 6,
   Snow            : 7,
   Mist            : 8,
-  Unknown         : 1000,
+  Unknown         : 999999999,
 }
 
 export const Providers = {
@@ -18,5 +18,3 @@ export const Providers = {
   darksky         : "darksky",
   weatherbit      : "weatherbit"
 }
-
-export const WEATHER_MESSAGE_KEY = "my_awesome_weather_message"

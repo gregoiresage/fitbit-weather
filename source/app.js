@@ -1,15 +1,19 @@
 import { peerSocket } from 'messaging'
 import { readFileSync, writeFileSync } from 'fs'
-import { WEATHER_MESSAGE_KEY } from './common'
 export { Conditions } from './common'
 
 let weather = undefined
+
+const WEATHER_DATA_FILE = "276e3d15-ffae-4a07-bda5-f1851e68cc77" // should be a unique name
+
+const promises = {}
+const requests = []
 
 const readWeatherFile = () => {
   try {
     weather = readFileSync(WEATHER_DATA_FILE, 'cbor')
   } catch (n) {
-    weather = { timestamp: 0 }
+    weather = undefined
   }
 }
 
@@ -20,6 +24,43 @@ const writeWeatherFile = () => {
   }
 }
 
+const sendRequest = (r) => {
+  if (peerSocket.readyState === peerSocket.OPEN) {
+    peerSocket.send(r);
+  } else {
+    requests.push(r);
+  }
+}
+
+peerSocket.addEventListener('message', (evt) => {
+  const { weather_message_id, data, error } = evt.data
+  if (weather_message_id) {
+    const promise = promises[weather_message_id]
+    if (error) {
+      promise.reject(error)
+    }
+    else {
+      weather = data
+      weather.timestamp = Date.now()
+      writeWeatherFile()
+      promise.resolve(weather)
+    }
+    delete promises[weather_message_id]
+  }
+})
+
+peerSocket.addEventListener('open', (evt) => {
+  setTimeout(() => {
+    requests.forEach(r => sendRequest(r))
+    requests.length = 0
+  }, 500);
+})
+
+peerSocket.addEventListener('error', (err) => {
+  console.log("Connection error: " + err.message)
+  // I don't know what to do in this case yet... Notify every promises object ?
+})
+
 export const fetch = (maximumAge = 0) => {
 
   if (weather === undefined) {
@@ -28,31 +69,19 @@ export const fetch = (maximumAge = 0) => {
 
   return new Promise((resolve, reject) => {
     const now = Date.now()
-
-    if (weather !== undefined && weather.timestamp !== undefined && (now - weather.timestamp < maximumAge)) {
+    if (weather && (now - weather.timestamp < maximumAge)) {
       resolve(weather)
     }
-    else if (peerSocket.readyState !== peerSocket.OPEN) {
-      reject('No connection with the companion')
-    }
     else {
-      const l = (evt) => {
-        if (evt.data !== undefined && evt.data[WEATHER_MESSAGE_KEY] !== undefined) {
-          peerSocket.removeEventListener('message', l)
-          if (evt.data.error) {
-            reject(evt.data.error)
-          }
-          else {
-            weather = evt.data.data
-            writeWeatherFile()
-            resolve(weather)
-          }
-        }
-      }
-      peerSocket.addEventListener('message', l)
-
-      // Send a command to the companion
-      peerSocket.send({ [WEATHER_MESSAGE_KEY]: 0 })
+      promises[now] = { resolve, reject }
+      sendRequest({ weather_message_id : now })
     }
   })
+}
+
+export const get = () => {
+  if(weather === undefined) {
+    readWeatherFile()
+  }
+  return weather
 }
