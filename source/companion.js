@@ -311,7 +311,7 @@ const fetchDarkskyWeather = (apiKey, feelsLike, latitude, longitude) => {
           temperatureF: (temp * 9 / 5 + 32),
           location: "",
           description: data.currently.summary,
-          isDay: data.currently.icon.indexOf("-day") > 0,
+          isDay : data.currently.time > data.daily.data[0].sunriseTime && data.currently.time < data.daily.data[0].sunsetTime,
           conditionCode : condition !== undefined ? condition : Conditions.Unknown,
           realConditionCode: data.currently.icon,
           sunrise: data.daily.data[0].sunriseTime * 1000,
