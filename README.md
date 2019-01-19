@@ -1,7 +1,7 @@
 # Weather module for Fitbit OS
 
 This library permits to retrieve weather information from the device.  
-You can choose your favourite weather provider between [Yahoo](https://query.yahooapis.com), [OpenWeatherMap](http://api.openweathermap.org), [DarkSky](https://api.darksky.net) and [WeatherUnderground](http://api.wunderground.com) [Weatherbit](https://www.weatherbit.io/)
+You can choose your favourite weather provider between [Yahoo](https://query.yahooapis.com), [OpenWeatherMap](http://api.openweathermap.org), [DarkSky](https://api.darksky.net) and [Weatherbit](https://www.weatherbit.io/)
 
 ## Installation
 
@@ -73,7 +73,6 @@ const Conditions = {
 const Providers = {
   yahoo           : "yahoo",
   openweathermap  : "owm",
-  wunderground    : "wu",
   darksky         : "darksky",
   weatherbit      : "weatherbit"
 }

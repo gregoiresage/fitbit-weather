@@ -134,21 +134,6 @@ let mapping_codes = {
     803: Conditions.BrokenClouds,
     804: Conditions.BrokenClouds
   },
-  [Providers.wunderground] : {
-    'clear' : Conditions.ClearSky,
-    'mostlysunny' : Conditions.FewClouds,
-    'partlycloudy' : Conditions.FewClouds,
-    'partlysunny' : Conditions.ScatteredClouds,
-    'mostlycloudy' : Conditions.ScatteredClouds,
-    'cloudy' : Conditions.BrokenClouds,
-    'rain' : Conditions.Rain,
-    'tstorm' : Conditions.Thunderstorm,
-    'snow' : Conditions.Snow,
-    'sleet' : Conditions.Snow,
-    'flurries' : Conditions.Snow,
-    'fog' : Conditions.Mist,
-    'hazy' : Conditions.Mist
-  },
   [Providers.darksky] : {
     'clear-day' : Conditions.ClearSky,
     'clear-night' : Conditions.ClearSky,
@@ -243,44 +228,6 @@ const fetchOWMWeather = (apiKey, feelsLike, latitude, longitude) => {
 
         // Send the weather data to the device
         resolve(weather)
-      })
-      .catch(e => reject(e.message))
-  })
-}
-
-const fetchWUWeather = (apiKey, feelsLike, latitude, longitude) => {
-  return new Promise((resolve, reject) => {
-    const url = 'https://api.wunderground.com/api/' + apiKey + '/conditions/q/' + latitude + ',' + longitude + '.json'
-
-    console.log(encodeURI(url))
-
-    fetch(encodeURI(url))
-      .then(response => response.json())
-      .then(data => {
-        if (data.current_observation === undefined) {
-          reject(data.response.error.description)
-          return
-        }
-
-        let condition = data.current_observation.icon
-        condition = mapping_codes[Providers.wunderground][condition]
-
-        var temp = feelsLike ? parseFloat(data.current_observation.feelslike_c) : data.current_observation.temp_c
-
-        const weather = {
-          temperatureC: temp,
-          temperatureF: (temp * 9 / 5 + 32),
-          location: data.current_observation.display_location.city,
-          description: data.current_observation.weather,
-          isDay: data.current_observation.icon_url.indexOf("nt_") == -1,
-          conditionCode : condition !== undefined ? condition : Conditions.Unknown,
-          realConditionCode: data.current_observation.icon,
-          sunrise: 0,
-          sunset: 0
-        }
-
-        // Send the weather data to the device
-        resolve(weather);
       })
       .catch(e => reject(e.message))
   })
@@ -441,7 +388,6 @@ const prv_timeParse = (str) => {
 const fetchFuncs = {
   [Providers.yahoo]           : fetchYahooWeather,
   [Providers.openweathermap]  : fetchOWMWeather,
-  [Providers.wunderground]    : fetchWUWeather,
   [Providers.darksky]         : fetchDarkskyWeather,
   [Providers.weatherbit]      : fetchWeatherbit
 }
