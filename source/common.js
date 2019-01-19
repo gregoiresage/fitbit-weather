@@ -12,7 +12,6 @@ export const Conditions = {
 }
 
 export const Providers = {
-  yahoo           : "yahoo",
   openweathermap  : "owm",
   darksky         : "darksky",
   weatherbit      : "weatherbit"

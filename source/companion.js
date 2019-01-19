@@ -5,13 +5,13 @@ import { Conditions, Providers } from './common'
 export { Conditions, Providers } from './common'
 
 const conf = {
-  provider: Providers.yahoo,
+  provider: Providers.openweathermap,
   apiKey: '',
   feelsLike: false,
   init: false
 }
 
-export const setup = ({ provider = Providers.yahoo, apiKey = '', feelsLike = false }) => {
+export const setup = ({ provider = Providers.openweathermap, apiKey = '', feelsLike = false }) => {
 
   conf.provider  = provider
   conf.apiKey    = apiKey
@@ -35,43 +35,6 @@ export const setup = ({ provider = Providers.yahoo, apiKey = '', feelsLike = fal
 }
 
 let mapping_codes = {
-  [Providers.yahoo] : {
-    "31": Conditions.ClearSky,
-    "32": Conditions.ClearSky,
-    "33": Conditions.ClearSky,
-    "34": Conditions.ClearSky,
-    "29": Conditions.FewClouds,
-    "30": Conditions.FewClouds,
-    "44": Conditions.FewClouds,
-    "8": Conditions.ShowerRain,
-    "9": Conditions.ShowerRain,
-    "6": Conditions.Rain,
-    "10": Conditions.Rain,
-    "11": Conditions.Rain,
-    "12": Conditions.Rain,
-    "35": Conditions.Rain,
-    "40": Conditions.Rain,
-    "1": Conditions.Thunderstorm,
-    "3": Conditions.Thunderstorm,
-    "4": Conditions.Thunderstorm,
-    "37": Conditions.Thunderstorm,
-    "38": Conditions.Thunderstorm,
-    "39": Conditions.Thunderstorm,
-    "47": Conditions.Thunderstorm,
-    "5": Conditions.Snow,
-    "7": Conditions.Snow,
-    "13": Conditions.Snow,
-    "14": Conditions.Snow,
-    "15": Conditions.Snow,
-    "16": Conditions.Snow,
-    "41": Conditions.Snow,
-    "42": Conditions.Snow,
-    "43": Conditions.Snow,
-    "20": Conditions.Mist,
-    "26": Conditions.BrokenClouds,
-    "27": Conditions.BrokenClouds,
-    "28": Conditions.BrokenClouds
-  },
   [Providers.openweathermap] : {
     200 : Conditions.Thunderstorm,
     201 : Conditions.Thunderstorm,
@@ -288,48 +251,6 @@ const fetchDarkskyWeather = (apiKey, feelsLike, latitude, longitude) => {
   })
 }
 
-const fetchYahooWeather = (apiKey, feelsLike, latitude, longitude) => {
-  return new Promise((resolve, reject) => {
-    const url = 'https://query.yahooapis.com/v1/public/yql?q=select astronomy, location.city, item.condition from weather.forecast where woeid in ' +
-      '(select woeid from geo.places(1) where text=\'(' + latitude + ',' + longitude + ')\') and u=\'c\'&format=json'
-
-    console.log(url)
-
-    fetch(encodeURI(url))
-      .then(response => response.json())
-      .then(data => {
-
-        if (data.query === undefined || data.query.results === undefined || data.query.results.channel === undefined) {
-          reject(data)
-          return
-        }
-
-        var condition = data.query.results.channel.item.condition.code
-        condition = mapping_codes[Providers.yahoo][condition]
-
-        const current_time = new Date()
-        const sunrise_time = prv_timeParse(data.query.results.channel.astronomy.sunrise)
-        const sunset_time = prv_timeParse(data.query.results.channel.astronomy.sunset)
-
-        const weather = {
-          temperatureC: parseInt(data.query.results.channel.item.condition.temp),
-          temperatureF: (parseInt(data.query.results.channel.item.condition.temp) * 9 / 5 + 32),
-          location: data.query.results.channel.location.city,
-          description: data.query.results.channel.item.condition.text,
-          isDay: current_time > sunrise_time && current_time < sunset_time,
-          conditionCode : condition !== undefined ? condition : Conditions.Unknown,
-          realConditionCode: data.query.results.channel.item.condition.code,
-          sunrise: sunrise_time.getTime(),
-          sunset: sunset_time.getTime()
-        }
-
-        // Send the weather data to the device
-        resolve(weather)
-      })
-      .catch(e => reject(e.message))
-  })
-}
-
 const fetchWeatherbit = (apiKey, feelsLike, latitude, longitude) => {
   return new Promise((resolve, reject) => {
     const url = 'https://api.weatherbit.io/v2.0/current?key=' + apiKey + '&lat=' + latitude + '&lon=' + longitude
@@ -386,7 +307,6 @@ const prv_timeParse = (str) => {
 }
 
 const fetchFuncs = {
-  [Providers.yahoo]           : fetchYahooWeather,
   [Providers.openweathermap]  : fetchOWMWeather,
   [Providers.darksky]         : fetchDarkskyWeather,
   [Providers.weatherbit]      : fetchWeatherbit
