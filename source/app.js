@@ -13,7 +13,7 @@ const readWeatherFile = () => {
   try {
     weather = readFileSync(WEATHER_DATA_FILE, 'cbor')
   } catch (n) {
-    weather = undefined
+    weather = { now : 0 }
   }
 }
 
