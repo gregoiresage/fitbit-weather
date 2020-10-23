@@ -78,10 +78,10 @@ const Providers = {
 ```
 
 ## TypeScript
-Developer who are using TypeScript could include type definitions from [fitbit-weather-types](https://github.com/JeremyJeanson/fitbit-weather-types).
+Developer who are using TypeScript could include type definitions from [](https://www.npmjs.com/package/@types/fitbit-weather) or [fitbit-weather-types](https://github.com/JeremyJeanson/fitbit-weather-types).
 
 ```javascript
-npm i fitbit-weather-types
+npm i @types/fitbit-weather
 ```
 
 ## Contribution
