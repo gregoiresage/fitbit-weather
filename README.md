@@ -77,6 +77,13 @@ const Providers = {
 }
 ```
 
+## TypeScript
+Developer who are using TypeScript could include type definitions from [](https://www.npmjs.com/package/@types/fitbit-weather) or [fitbit-weather-types](https://github.com/JeremyJeanson/fitbit-weather-types).
+
+```javascript
+npm i @types/fitbit-weather
+```
+
 ## Contribution
 
 I'm not a javascript expert so every comment/code reactoring/best practice is appreciated. Don't hesitate to make PR and tell me what's wrong.
