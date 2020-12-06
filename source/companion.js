@@ -326,7 +326,7 @@ const fetchWeather = (provider, apiKey, feelsLike) => {
             .catch(reject)
         },
         reject, 
-        { "enableHighAccuracy": false, "maximumAge": 1000 * 1800 }
+        { enableHighAccuracy: false, maximumAge: 1000 * 1800, timeout: 60 * 1000 }
       )
     }
   })
